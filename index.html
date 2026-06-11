@@ -8,6 +8,17 @@
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <!-- 戴夫皮肤文件 -->
   <link rel="stylesheet" href="dave-ui-theme.css">
+  <link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="牛排教练">
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js')
+      .then(() => console.log('班乔厨房后勤系统已就位'))
+      .catch(err => console.log('初始化失败:', err));
+  }
+</script>
 </head>
 <body class="dave-bg">
 
