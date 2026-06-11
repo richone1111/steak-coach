@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>潜水员戴夫：牛排烹饪教练</title>
+  <!-- 像素字体 -->
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <!-- 戴夫皮肤文件 -->
+  <link rel="stylesheet" href="dave-ui-theme.css">
+</head>
+<body class="dave-bg">
+
+  <!-- ================================================================
+       主应用容器
+       ================================================================ -->
+  <div id="app" style="max-width:480px;margin:0 auto;padding:12px;padding-bottom:40px;min-height:100vh;">
+
+    <!-- ============================================================
+         区块1：班乔主厨密辛卡片
+         ============================================================ -->
+    <header>
+      <div class="bancho-card" style="margin-top:8px;">
+        <!-- 班乔像素头像容器 -->
+        <div class="bancho-avatar-wrap" id="banchoAvatarWrap">
+          <div class="bancho-pixel-face" id="banchoFace"></div>
+        </div>
+        <!-- 密辛气泡 -->
+        <div class="bancho-bubble">
+          <p class="bancho-tip-text" id="dailyTipText">加载中...</p>
+          <span class="bancho-sig">—— 班乔主厨</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ============================================================
+         区块2：食材图鉴背包（参数输入）
+         ============================================================ -->
+    <main>
+      <section id="paramSection">
+        <div class="pixel-section-title">⚔ 食材图鉴 · 背包 ⚔</div>
+
+        <!-- 牛排种类 -->
+        <div class="pixel-card">
+          <label class="pixel-label" for="steakType">🥩 牛排种类</label>
+          <div class="pixel-select-wrap">
+            <select class="pixel-select" id="steakType">
+              <option value="ribeye">眼肉（ Ribeye ）— 油花爆炸</option>
+              <option value="tenderloin">菲力（ Tenderloin ）— 极致软嫩</option>
+              <option value="sirloin">西冷（ Sirloin ）— 嚼劲十足</option>
+              <option value="flatiron">板腱（ Flat Iron ）— 隐藏神肉</option>
+              <option value="other">其他（ Other ）— 不挑肉</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 厚度选择网格 -->
+        <div class="pixel-card">
+          <label class="pixel-label">📏 牛排厚度</label>
+          <div class="pixel-grid-2x2" id="thicknessGrid">
+            <div class="pixel-grid-card" data-thickness="thin" id="thickThin">
+              <span class="card-icon">🥓</span>
+              <span class="card-label">薄切 1.5cm</span>
+              <span class="card-sub">快煎快手</span>
+            </div>
+            <div class="pixel-grid-card active" data-thickness="standard" id="thickStandard">
+              <span class="card-icon">🥩</span>
+              <span class="card-label">标准 2.0cm</span>
+              <span class="card-sub">新手友好</span>
+            </div>
+            <div class="pixel-grid-card" data-thickness="thick" id="thickThick">
+              <span class="card-icon">🍖</span>
+              <span class="card-label">厚切 2.5cm</span>
+              <span class="card-sub">老饕专属</span>
+            </div>
+            <div class="pixel-grid-card card-warning" data-thickness="uneven" id="thickUneven">
+              <span class="card-icon">⚠️</span>
+              <span class="card-label">厚薄不均</span>
+              <span class="card-sub">急救模式</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 目标熟度 -->
+        <div class="pixel-card">
+          <label class="pixel-label">🎯 目标熟度</label>
+          <div class="pixel-grid-4x1" id="donenessGrid">
+            <div class="pixel-grid-card" data-doneness="rare" id="doneRare">
+              <span class="card-icon">🔴</span>
+              <span class="card-label">三分熟</span>
+            </div>
+            <div class="pixel-grid-card active" data-doneness="medium" id="doneMedium">
+              <span class="card-icon">🟠</span>
+              <span class="card-label">五分熟</span>
+            </div>
+            <div class="pixel-grid-card" data-doneness="medium-well" id="doneMediumWell">
+              <span class="card-icon">🟡</span>
+              <span class="card-label">七分熟</span>
+            </div>
+            <div class="pixel-grid-card" data-doneness="well-done" id="doneWellDone">
+              <span class="card-icon">🟤</span>
+              <span class="card-label">全熟</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 开始按钮 -->
+        <button class="pixel-btn pixel-btn--primary pixel-btn--large" id="startCookingBtn"
+                style="margin-top:12px;font-size:14px;">
+          ⚔ 开 始 煎 肉 ！
+        </button>
+      </section>
+
+      <!-- ============================================================
+           区块3：Cooksta 评级 & 历史记录
+           ============================================================ -->
+      <section id="historySection" style="margin-top:24px;">
+        <div class="pixel-section-title">📸 Cooksta 餐厅评级</div>
+
+        <!-- 称号徽章 + 经验条 -->
+        <div style="text-align:center;margin-bottom:12px;">
+          <span class="pixel-title-badge" id="titleBadge">路边摊学徒</span>
+        </div>
+        <div class="pixel-exp-bar">
+          <div class="pixel-exp-bar__fill" id="expBarFill" style="width:0%;"></div>
+        </div>
+        <p style="font-size:7px;color:var(--dave-yellow);text-align:center;margin-bottom:12px;">
+          刚刚好 ×<span id="perfectCount">0</span> ｜ 距下一称号还需 <span id="needForNext">3</span> 次
+        </p>
+
+        <!-- 历史列表 -->
+        <ul class="pixel-history pixel-scroll" id="historyList">
+          <li style="text-align:center;color:rgba(255,255,255,0.4);padding:20px;">
+            暂无烹饪记录<br>完成一次烹饪后出现
+          </li>
+        </ul>
+
+        <!-- 诊断报告按钮 -->
+        <button class="pixel-btn pixel-btn--secondary pixel-btn--block"
+                id="reportBtn" style="margin-top:12px;">
+          📊 生成7次实战诊断报告
+        </button>
+      </section>
+    </main>
+  </div>
+
+  <!-- ================================================================
+       全屏烹饪冒险覆盖层
+       ================================================================ -->
+  <div class="pixel-overlay hidden" id="cookingOverlay">
+    <!-- 阶段指示灯 -->
+    <div class="pixel-phase-indicator" id="phaseDots">
+      <div class="pixel-phase-dot" data-phase="1"></div>
+      <div class="pixel-phase-dot" data-phase="2"></div>
+      <div class="pixel-phase-dot" data-phase="3"></div>
+      <div class="pixel-phase-dot" data-phase="4"></div>
+    </div>
+
+    <!-- 阶段标题 -->
+    <div class="pixel-phase-title" id="phaseTitle">阶段一</div>
+
+    <!-- 阶段内容区 -->
+    <div id="phaseContent" style="width:100%;max-width:400px;margin:0 auto;flex:1;display:flex;flex-direction:column;align-items:center;">
+      <!-- JS 动态填充 -->
+    </div>
+
+    <!-- 底部操作区 -->
+    <div id="phaseActions" style="width:100%;max-width:400px;margin-top:16px;">
+      <!-- JS 动态填充按钮 -->
+    </div>
+  </div>
+
+  <!-- ================================================================
+       胜利弹窗（模态）
+       ================================================================ -->
+  <div class="pixel-modal hidden" id="victoryModal">
+    <div class="pixel-modal__box">
+      <div class="pixel-trophy">
+        <span class="pixel-trophy__icon">🏆</span>
+      </div>
+      <div class="pixel-modal__title">✨ Bancho Perfect! ✨</div>
+      <div class="pixel-trophy__text">成功捕捉完美牛排！</div>
+      <div class="pixel-modal__body" style="margin-top:16px;">
+        班乔主厨向你投来赞许的目光<br>现在是时候品鉴你的杰作了
+      </div>
+      <button class="pixel-btn pixel-btn--primary pixel-btn--block"
+              id="victoryContinueBtn" style="margin-top:12px;">
+        品鉴时刻 →
+      </button>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       反馈弹窗（模态）
+       ================================================================ -->
+  <div class="pixel-modal hidden" id="feedbackModal">
+    <div class="pixel-modal__box">
+      <div class="pixel-modal__title">📸 今日饭后反馈</div>
+
+      <div class="pixel-modal__body" style="text-align:left;">
+        <!-- 实际熟度 -->
+        <label class="pixel-label" style="margin-top:8px;">实际熟度如何？</label>
+        <div class="pixel-grid-4x1" id="actualDonenessGrid">
+          <div class="pixel-grid-card" data-actual="undercooked" id="actUnder">太生了</div>
+          <div class="pixel-grid-card active" data-actual="perfect" id="actPerfect">刚刚好</div>
+          <div class="pixel-grid-card" data-actual="overcooked" id="actOver">熟过了</div>
+          <div class="pixel-grid-card" data-actual="uneven-done" id="actUneven">里外不均</div>
+        </div>
+
+        <!-- 今日槽点（多选） -->
+        <label class="pixel-label" style="margin-top:12px;">今日槽点（可多选）</label>
+        <div class="pixel-checkbox-group" id="complaintsGroup">
+          <label class="pixel-checkbox"><input type="checkbox" value="crust"> 焦壳不够脆</label>
+          <label class="pixel-checkbox"><input type="checkbox" value="grey-band"> 灰色熟层太厚</label>
+          <label class="pixel-checkbox"><input type="checkbox" value="stuck"> 粘锅了</label>
+          <label class="pixel-checkbox"><input type="checkbox" value="smoke"> 油烟太大</label>
+          <label class="pixel-checkbox"><input type="checkbox" value="uneven-cook"> 熟度不均</label>
+          <label class="pixel-checkbox"><input type="checkbox" value="dry"> 肉太柴</label>
+        </div>
+
+        <!-- 星级评分 -->
+        <label class="pixel-label" style="margin-top:12px;">方案评分</label>
+        <div class="pixel-stars" id="starRating">
+          <span class="pixel-star" data-star="1">★</span>
+          <span class="pixel-star" data-star="2">★</span>
+          <span class="pixel-star" data-star="3">★</span>
+          <span class="pixel-star" data-star="4">★</span>
+          <span class="pixel-star" data-star="5">★</span>
+        </div>
+      </div>
+
+      <div class="pixel-modal__footer" style="margin-top:12px;">
+        <button class="pixel-btn pixel-btn--primary pixel-btn--block" id="submitFeedbackBtn">
+          提交反馈
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       诊断报告弹窗
+       ================================================================ -->
+  <div class="pixel-modal hidden" id="reportModal">
+    <div class="pixel-modal__box" style="max-width:90vw;">
+      <div class="pixel-modal__title">📊 实战诊断报告</div>
+      <div class="pixel-report pixel-scroll" id="reportContent">
+        <!-- JS 动态填充 -->
+      </div>
+      <div class="pixel-modal__footer">
+        <button class="pixel-btn pixel-btn--secondary pixel-btn--small" id="copyReportBtn">
+          📋 一键复制
+        </button>
+        <button class="pixel-btn pixel-btn--primary pixel-btn--small" id="closeReportBtn">
+          知道了
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ================================================================
+       JavaScript 全逻辑
+       ================================================================ -->
+  <script>
+  (function() {
+    'use strict';
+
+    /* ==========================================================
+       Part A：班乔主厨像素头像渲染
+       ========================================================== */
+    /**
+     * 用 box-shadow 逐像素绘出班乔的 8×8 像素大头照。
+     * 像素映射图（每个字符一像素）：
+     *  . = 透明   H = 白厨师帽   S = 深肤色   E = 白眼仁
+     *  M = 浅肤色(嘴巴附近)   W = 白厨师衫
+     */
+    var BANCHO_PIXEL_MAP = [
+      '..HHHH..',
+      '.HHHHHH.',
+      '.HHHHHH.',
+      '..SESE..',
+      '..SSSS..',
+      '..SMMS..',
+      '.WWWWWW.',
+      '.WW..WW.',
+    ];
+
+    var BANCHO_COLORS = {
+      '.': 'transparent',
+      'H': '#FFFFFF',
+      'S': '#2D1B0E',
+      'E': '#FFFFFF',
+      'M': '#C4956A',
+      'W': '#FFFFFF',
+    };
+
+    function renderBanchoAvatar() {
+      var faceEl  = document.getElementById('banchoFace');
+      if (!faceEl) return;
+      var px = 5;   // 每像素 5px
+      var shadows = [];
+      for (var y = 0; y < BANCHO_PIXEL_MAP.length; y++) {
+        var row = BANCHO_PIXEL_MAP[y];
+        for (var x = 0; x < row.length; x++) {
+          var color = BANCHO_COLORS[row[x]];
+          if (color !== 'transparent') {
+            shadows.push((x * px) + 'px ' + (y * px) + 'px 0 ' + color);
+          }
+        }
+      }
+      faceEl.style.boxShadow = shadows.join(',');
+      faceEl.style.width  = px + 'px';
+      faceEl.style.height = px + 'px';
+    }
+
+
+    /* ==========================================================
+       Part B：数据持久化（localStorage）
+       ========================================================== */
+    var STORAGE_KEY_HISTORY = 'dave_steak_history';
+    var STORAGE_KEY_TITLE   = 'dave_chef_title';
+
+    function loadHistory() {
+      try {
+        var raw = localStorage.getItem(STORAGE_KEY_HISTORY);
+        return raw ? JSON.parse(raw) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveHistory(historyArr) {
+      try {
+        localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(historyArr));
+      } catch (e) {
+        alert('本地存储空间不足，请清理浏览器数据。');
+      }
+    }
+
+    function loadTitle() {
+      try {
+        return localStorage.getItem(STORAGE_KEY_TITLE) || '路边摊学徒';
+      } catch (e) {
+        return '路边摊学徒';
+      }
+    }
+
+    function saveTitle(title) {
+      try {
+        localStorage.setItem(STORAGE_KEY_TITLE, title);
+      } catch (e) {}
+    }
+
+    /** 统计累计"刚刚好"次数 */
+    function countPerfect(historyArr) {
+      return historyArr.filter(function(e) { return e.actual === 'perfect'; }).length;
+    }
+
+
+    /* ==========================================================
+       Part C：班乔主厨密辛
+       ========================================================== */
+    var CHEF_TIPS = [
+      'MUJI铁锅每次用完后烘干抹油养锅，别偷懒！锅养好了比不粘锅还好用。',
+      '严禁冷水冲热锅！热锅遇冷瞬间变形，几千块的锅直接报废。',
+      '牛排提前一天放冷藏解冻，千万别用微波炉或热水泡，肉汁全跑光。',
+      '用海盐或粗盐粒提前40分钟腌肉，下锅时盐粒爆香，焦化层更酥脆。',
+      '拒绝拼接肉！超市里用TG酶粘起来的"组装牛排"，下锅就散架。',
+      '菲力煎完醒肉时放一小块黄油在上面，余温融化渗透，香到你怀疑人生。',
+      '煎肉前用厨房纸把肉表面拍干！湿哒哒的肉下锅就是在煮肉，不出焦壳。',
+      '板腱中间那条白筋膜，下锅前用剪刀在筋膜上每隔1cm剪一刀（不要剪断肉），受热就不会拱起来。煎出来嫩度直逼菲力，价格只有一半。',
+      '没有温度计？用拇指按压左手大鱼际肌！拇指碰食指=三分熟软度，碰中指=五分熟弹性，碰无名指=七分紧实，碰小指=全熟硬实。',
+    ];
+
+    function getRandomTip() {
+      var idx = Math.floor(Math.random() * CHEF_TIPS.length);
+      return CHEF_TIPS[idx];
+    }
+
+    function showDailyTip() {
+      var el = document.getElementById('dailyTipText');
+      if (el) el.textContent = getRandomTip();
+    }
+
+
+    /* ==========================================================
+       Part D：音效引擎（Web Audio API — 无外部文件）
+       ========================================================== */
+    var audioCtx = null;
+
+    function getAudioCtx() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      return audioCtx;
+    }
+
+    /** 播放"叮"提示音 */
+    function playDing() {
+      try {
+        var ctx = getAudioCtx();
+        var t = ctx.currentTime;
+        // 高频叮声
+        var osc1 = ctx.createOscillator();
+        var gain1 = ctx.createGain();
+        osc1.type = 'sine';
+        osc1.frequency.value = 1200;
+        gain1.gain.setValueAtTime(0.4, t);
+        gain1.gain.exponentialRampToValueAtTime(0.01, t + 0.2);
+        osc1.connect(gain1).connect(ctx.destination);
+        osc1.start(t);
+        osc1.stop(t + 0.2);
+        // 叠一个低音
+        var osc2 = ctx.createOscillator();
+        var gain2 = ctx.createGain();
+        osc2.type = 'triangle';
+        osc2.frequency.value = 800;
+        gain2.gain.setValueAtTime(0.3, t);
+        gain2.gain.exponentialRampToValueAtTime(0.01, t + 0.25);
+        osc2.connect(gain2).connect(ctx.destination);
+        osc2.start(t);
+        osc2.stop(t + 0.25);
+      } catch (e) {
+        /* 静默降级 */
+      }
+    }
+
+    /** 通关大号音效 */
+    function playFanfare() {
+      try {
+        var ctx = getAudioCtx();
+        var notes = [523, 659, 784, 1047];
+        notes.forEach(function(freq, i) {
+          var osc = ctx.createOscillator();
+          var gain = ctx.createGain();
+          osc.type = 'square';
+          osc.frequency.value = freq;
+          var t = ctx.currentTime + i * 0.15;
+          gain.gain.setValueAtTime(0.2, t);
+          gain.gain.exponentialRampToValueAtTime(0.01, t + 0.3);
+          osc.connect(gain).connect(ctx.destination);
+          osc.start(t);
+          osc.stop(t + 0.3);
+        });
+      } catch (e) {}
+    }
+
+
+    /* ==========================================================
+       Part E：计时器（基于 Date.now，防后台暂停漂移）
+       ========================================================== */
+    /**
+     * 创建精确倒计时器
+     * @param {number} durationSec - 倒计时总秒数
+     * @param {function} onTick   - 每秒回调 (remainingSec, elapsedSec)
+     * @param {function} onDone   - 倒计时结束回调
+     * @returns {{ stop: function, getRemaining: function }}
+     */
+    function createTimer(durationSec, onTick, onDone) {
+      var start = Date.now();
+      var totalMs = durationSec * 1000;
+      var fired = false;
+      var stopped = false;
+
+      var id = setInterval(function() {
+        if (stopped) return;
+        var elapsed = Date.now() - start;
+        var remaining = Math.max(0, totalMs - elapsed);
+        var sec = Math.ceil(remaining / 1000);
+        if (onTick) onTick(sec, Math.floor(elapsed / 1000));
+        if (remaining <= 0 && !fired) {
+          fired = true;
+          clearInterval(id);
+          if (onDone) onDone();
+        }
+      }, 200);   // 200ms 刷新，保证 UI 不卡
+
+      return {
+        stop: function() {
+          stopped = true;
+          clearInterval(id);
+        },
+        getRemaining: function() {
+          return Math.max(0, Math.ceil((totalMs - (Date.now() - start)) / 1000));
+        },
+      };
+    }
+
+
+    /* ==========================================================
+       Part F：烹饪时间表
+       ========================================================== */
+    /** 每面煎制秒数 [厚度][部位][熟度] — 大火铸铁锅前提 */
+    var COOK_TIME_PER_SIDE = {
+      /* 1.5cm 薄切 — 各部位差异微小，统一时间 */
+      thin: {
+        generic: { rare: 60, medium: 90, 'medium-well': 120, 'well-done': 150 },
+      },
+      /* 2.0cm 标准 — 按部位微调 */
+      standard: {
+        ribeye:    { rare: 75, medium: 100, 'medium-well': 125, 'well-done': 150 },
+        tenderloin:{ rare: 80, medium: 105, 'medium-well': 130, 'well-done': 155 },
+        sirloin:   { rare: 85, medium: 110, 'medium-well': 140, 'well-done': 165 },
+        flatiron:  { rare: 70, medium: 95,  'medium-well': 120, 'well-done': 145 },
+        other:     { rare: 80, medium: 105, 'medium-well': 130, 'well-done': 155 },
+      },
+      /* 2.5cm 厚切 — 按部位微调 */
+      thick: {
+        ribeye:    { rare: 90, medium: 120, 'medium-well': 150, 'well-done': 180 },
+        tenderloin:{ rare: 95, medium: 125, 'medium-well': 155, 'well-done': 185 },
+        sirloin:   { rare: 100,medium: 130, 'medium-well': 165, 'well-done': 195 },
+        flatiron:  { rare: 85, medium: 110, 'medium-well': 140, 'well-done': 170 },
+        other:     { rare: 95, medium: 125, 'medium-well': 155, 'well-done': 185 },
+      },
+    };
+
+    /** 厚薄不均高频翻面：每轮30秒，共4轮 */
+    var UNEVEN_ROUNDS = 4;
+    var UNEVEN_PER_ROUND = 30;
+
+
+    /* ==========================================================
+       Part G：称号系统
+       ========================================================== */
+    var TITLE_TIERS = [
+      { min: 0,  title: '路边摊学徒' },
+      { min: 3,  title: '深夜食堂帮厨' },
+      { min: 6,  title: '黄金神厨' },
+      { min: 11, title: '班乔亲传弟子' },
+      { min: 16, title: '米其林深海之主' },
+    ];
+
+    function getTitleByPerfectCount(count) {
+      var title = '路边摊学徒';
+      for (var i = 0; i < TITLE_TIERS.length; i++) {
+        if (count >= TITLE_TIERS[i].min) {
+          title = TITLE_TIERS[i].title;
+        }
+      }
+      return title;
+    }
+
+    function getNextTitleInfo(count) {
+      for (var i = TITLE_TIERS.length - 1; i >= 0; i--) {
+        if (count >= TITLE_TIERS[i].min) {
+          var next = TITLE_TIERS[i + 1];
+          if (next) {
+            return { current: TITLE_TIERS[i].title, next: next.title, need: next.min - count, progress: count - TITLE_TIERS[i].min, range: next.min - TITLE_TIERS[i].min };
+          }
+          return { current: TITLE_TIERS[i].title, next: null, need: 0, progress: 1, range: 1 };
+        }
+      }
+      return { current: '路边摊学徒', next: TITLE_TIERS[1].title, need: 3 - count, progress: count, range: 3 };
+    }
+
+
+    /* ==========================================================
+       Part H：应用全局状态
+       ========================================================== */
+    var state = {
+      steakType: 'ribeye',
+      thickness: 'standard',   // thin | standard | thick | uneven
+      doneness: 'medium',      // rare | medium | medium-well | well-done
+      currentTimer: null,
+      currentPhase: 0,         // 1-4, 0=未开始
+      unevenRound: 0,          // 厚薄不均当前轮次
+      feedback: {
+        actualDoneness: 'perfect',
+        complaints: [],
+        stars: 3,
+      },
+    };
+
+
+    /* ==========================================================
+       Part I：UI 辅助函数
+       ========================================================== */
+
+    /** 选中网格卡片（单选） */
+    function selectGridCard(gridId, valueKey, value) {
+      var cards = document.querySelectorAll('#' + gridId + ' .pixel-grid-card');
+      for (var i = 0; i < cards.length; i++) {
+        cards[i].classList.remove('active');
+      }
+      var target = document.querySelector('#' + gridId + ' [data-' + valueKey + '="' + value + '"]');
+      if (target) target.classList.add('active');
+    }
+
+    /** 显示覆盖层 */
+    function showOverlay() {
+      document.getElementById('cookingOverlay').classList.remove('hidden');
+    }
+    function hideOverlay() {
+      document.getElementById('cookingOverlay').classList.add('hidden');
+    }
+
+    /** 显示/隐藏模态 */
+    function showModal(id) {
+      document.getElementById(id).classList.remove('hidden');
+    }
+    function hideModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    /** 更新阶段指示灯 */
+    function updatePhaseDots(activePhase) {
+      var dots = document.querySelectorAll('#phaseDots .pixel-phase-dot');
+      for (var i = 0; i < dots.length; i++) {
+        var p = parseInt(dots[i].getAttribute('data-phase'));
+        dots[i].classList.remove('active', 'done');
+        if (p < activePhase) dots[i].classList.add('done');
+        if (p === activePhase) dots[i].classList.add('active');
+      }
+    }
+
+    /** 停止当前计时器 */
+    function stopTimer() {
+      if (state.currentTimer) {
+        state.currentTimer.stop();
+        state.currentTimer = null;
+      }
+    }
+
+
+    /* ==========================================================
+       Part J：烹饪阶段渲染
+       ========================================================== */
+
+    // ---- J1：阶段一 —— 回温检查 ----
+    function renderPhase1() {
+      state.currentPhase = 1;
+      updatePhaseDots(1);
+      document.getElementById('phaseTitle').textContent = '🥩 阶段一：空间与回温检查';
+
+      var content = document.getElementById('phaseContent');
+      var isThick = state.thickness === 'thick';
+      var isUneven = state.thickness === 'uneven';
+
+      var html = '';
+      html += '<div class="pixel-tip" style="text-align:center;margin-top:20px;">';
+      html += '✅ 确认肉已从冷藏取出，回温至室温！<br>';
+      html += '<small>冷肉下锅 = 外焦里生 ×</small>';
+      html += '</div>';
+
+      if (isThick || isUneven) {
+        html += '<div class="pixel-warning" style="margin-top:16px;">';
+        html += '⚠️ 班乔警告：<br>';
+        html += '你的 MUJI 19cm 铁锅空间偏小！<br>';
+        html += '肉太大就用剪刀把边缘牛脂肪剪下先润锅，<br>';
+        html += '防止 "清蒸变柴" 的惨剧！';
+        html += '</div>';
+      }
+
+      if (state.steakType === 'flatiron') {
+        html += '<div class="pixel-tip" style="margin-top:16px;text-align:center;">';
+        html += '🔪 板腱专属提醒：<br>';
+        html += '中间那条白筋膜，用剪刀每隔 1cm 剪一刀<br>';
+        html += '（不要剪断肉！）受热就不会拱起来了。';
+        html += '</div>';
+      }
+
+      content.innerHTML = html;
+
+      var actions = document.getElementById('phaseActions');
+      actions.innerHTML = '<button class="pixel-btn pixel-btn--primary pixel-btn--block" id="btnPhase1Confirm">✅ 确认已回温，进入预热</button>';
+
+      document.getElementById('btnPhase1Confirm').addEventListener('click', function() {
+        stopTimer();
+        renderPhase2();
+      });
+    }
+
+
+    // ---- J2：阶段二 —— 铸铁锅预热 ----
+    function renderPhase2() {
+      state.currentPhase = 2;
+      updatePhaseDots(2);
+      document.getElementById('phaseTitle').textContent = '🔥 阶段二：铸铁锅预热';
+
+      var content = document.getElementById('phaseContent');
+
+      var html = '';
+      html += '<div class="pixel-info" style="text-align:center;margin:12px 0;">';
+      html += '中大火空烧！看到锅面冒出<br>第一缕淡淡青烟，立刻跳过！';
+      html += '</div>';
+
+      // 氧气瓶
+      html += '<div style="display:flex;align-items:center;justify-content:center;gap:16px;margin:16px 0;">';
+      html += '<div class="pixel-o2-tank">';
+      html += '<div class="pixel-o2-tank__fill" id="o2Fill" style="height:100%;"></div>';
+      html += '</div>';
+      html += '<div>';
+      html += '<div class="pixel-timer" id="phase2Timer">3:00</div>';
+      html += '<p style="font-size:7px;color:var(--dave-yellow);text-align:center;">潜水氧气瓶 O₂</p>';
+      html += '</div>';
+      html += '</div>';
+
+      content.innerHTML = html;
+
+      var actions = document.getElementById('phaseActions');
+      actions.innerHTML = '<button class="pixel-btn pixel-btn--danger pixel-btn--block" id="btnSeeSmoke">🔥 老子看到烟了！直接跳过</button>';
+
+      // 启动3分钟倒计时
+      var totalSec = 180;
+      state.currentTimer = createTimer(totalSec, function(remaining) {
+        var el = document.getElementById('phase2Timer');
+        if (!el) return;
+        var m = Math.floor(remaining / 60);
+        var s = remaining % 60;
+        el.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+
+        // 更新氧气瓶
+        var fill = document.getElementById('o2Fill');
+        if (fill) {
+          var pct = (remaining / totalSec) * 100;
+          fill.style.height = pct + '%';
+          if (pct < 25) {
+            fill.classList.add('low');
+          } else {
+            fill.classList.remove('low');
+          }
+        }
+      }, function() {
+        // 时间到，自动进入阶段三
+        stopTimer();
+        renderPhase3();
+      });
+
+      document.getElementById('btnSeeSmoke').addEventListener('click', function() {
+        stopTimer();
+        renderPhase3();
+      });
+    }
+
+
+    // ---- J3：阶段三 —— 暴烈煎肉 ----
+    function renderPhase3() {
+      state.currentPhase = 3;
+      updatePhaseDots(3);
+      document.getElementById('phaseTitle').textContent = '🍳 阶段三：暴烈煎肉';
+
+      var content = document.getElementById('phaseContent');
+      var isUneven = state.thickness === 'uneven';
+
+      state.unevenRound = 0;
+
+      if (isUneven) {
+        renderPhase3Uneven(content);
+      } else {
+        renderPhase3Normal(content);
+      }
+    }
+
+    /** 正常模式 */
+    function renderPhase3Normal(content) {
+      // 按厚度→部位→熟度查找每面秒数
+      var thicknessTable = COOK_TIME_PER_SIDE[state.thickness];
+      var cutTimes = (thicknessTable[state.steakType] || thicknessTable.other || thicknessTable.generic);
+      var perSide = cutTimes[state.doneness];
+      var totalSec = perSide * 2;
+      var totalSecFlipped = totalSec;
+
+      var html = '';
+      html += '<div class="pixel-info" style="text-align:center;margin:8px 0;">';
+      html += '总煎制时间 ≈ ' + totalSec + ' 秒<br>';
+      html += '<small>' + perSide + 's/面 × 2 面 · ' + (state.thickness==="thin"?'1.5':state.thickness==="standard"?'2.0':'2.5') + 'cm</small>';
+      html += '</div>';
+
+      // 侧面观察对照表
+      html += '<div class="pixel-card--inset" style="padding:8px;margin-bottom:10px;text-align:center;">';
+      html += '<p style="font-size:7px;color:var(--dave-yellow);margin-bottom:4px;">👁 侧面灰色带 = 熟度参照</p>';
+      html += '<div style="display:flex;justify-content:space-between;font-size:7px;color:var(--dave-white);">';
+      html += '<span>1/4高<br>三分</span>';
+      html += '<span>1/3高<br>五分</span>';
+      html += '<span>1/2高<br>七分</span>';
+      html += '<span>2/3高<br>全熟</span>';
+      html += '</div>';
+      html += '</div>';
+
+      // 进度条
+      html += '<div class="pixel-progress" style="margin:12px 0;">';
+      html += '<div class="pixel-progress__fill" id="judgeBarFill" style="width:0%;"></div>';
+      html += '</div>';
+
+      html += '<div class="pixel-progress-label">';
+      html += '<span>第1面</span>';
+      html += '<span id="flipIndicator">⏳</span>';
+      html += '<span>第2面</span>';
+      html += '</div>';
+
+      html += '<div style="text-align:center;margin-top:12px;">';
+      html += '<span class="pixel-timer" id="phase3Timer">' + totalSec + '</span>';
+      html += '<span style="font-size:10px;color:var(--dave-white);"> 秒</span>';
+      html += '</div>';
+
+      // 观察提示占位
+      html += '<div id="phase3Tip" style="margin-top:12px;"></div>';
+
+      content.innerHTML = html;
+
+      var actions = document.getElementById('phaseActions');
+      actions.innerHTML = '';
+
+      var flipped = false;
+      var observationShown = false;
+
+      var startTime = Date.now();
+
+      state.currentTimer = createTimer(totalSecFlipped, function(remaining, elapsed) {
+        var el = document.getElementById('phase3Timer');
+        var bar = document.getElementById('judgeBarFill');
+        if (!el || !bar) return;
+
+        el.textContent = remaining;
+
+        var pct = Math.min(100, (elapsed / totalSecFlipped) * 100);
+        bar.style.width = pct + '%';
+
+        // 翻面提示（50%）
+        if (!flipped && pct >= 50) {
+          flipped = true;
+          playDing();
+          document.getElementById('flipIndicator').textContent = '🔄 翻面！';
+          bar.classList.add('warning');
+          var tip = document.getElementById('phase3Tip');
+          if (tip) {
+            tip.innerHTML = '<div class="pixel-warning">🔔 翻面！煎第二面！</div>';
+          }
+        }
+
+        // 60% 手感按压法 + 侧面观察双重提示
+        if (!observationShown && pct >= 60) {
+          observationShown = true;
+          var tip2 = document.getElementById('phase3Tip');
+          if (tip2) {
+            var targetDone = {rare:'三分熟',medium:'五分熟','medium-well':'七分熟','well-done':'全熟'}[state.doneness];
+            var handRef = {rare:'拇指碰食指',medium:'拇指碰中指','medium-well':'拇指碰无名指','well-done':'拇指碰小指'}[state.doneness];
+            tip2.innerHTML = '<div class="pixel-tip" style="font-size:9px;">' +
+              '🖐️ <b>手感按压法 · 终极判定</b><br>' +
+              '用夹子按压牛排中心，另一只手<br>' +
+              '<b style="color:var(--dave-yellow);">' + handRef + '</b><br>' +
+              '对照大鱼际肌硬度 = <b>' + targetDone + '</b><br>' +
+              '<small>太软→再煎15秒 ｜ 到位→立刻出锅</small>' +
+              '</div>';
+          }
+        }
+      }, function() {
+        stopTimer();
+        playDing();
+        renderPhase4();
+      });
+    }
+
+    /** 厚薄不均高频翻面急救模式 */
+    function renderPhase3Uneven(content) {
+      state.unevenRound = 0;
+
+      var html = '';
+      html += '<div class="pixel-warning" style="text-align:center;margin:8px 0;">';
+      html += '⚠️ 30秒高频翻面急救模式启动！<br>';
+      html += '<small>厚侧对准锅心，薄侧甩在锅边！<br>高频翻面让热量温柔渗透</small>';
+      html += '</div>';
+
+      // 侧面观察对照（精简版）
+      html += '<div class="pixel-card--inset" style="padding:6px;margin-bottom:8px;text-align:center;">';
+      html += '<p style="font-size:7px;color:var(--dave-yellow);margin-bottom:2px;">👁 侧面灰色带参照</p>';
+      html += '<div style="display:flex;justify-content:space-between;font-size:6px;color:var(--dave-white);">';
+      html += '<span>1/4<br>三分</span><span>1/3<br>五分</span><span>1/2<br>七分</span><span>2/3<br>全熟</span>';
+      html += '</div></div>';
+
+      html += '<div style="text-align:center;margin:12px 0;">';
+      html += '<span style="font-size:10px;color:var(--dave-yellow);">轮次</span>';
+      html += '<span class="pixel-timer" id="unevenRoundText" style="margin:0 8px;">1</span>';
+      html += '<span style="font-size:10px;color:var(--dave-yellow);"> / ' + UNEVEN_ROUNDS + '</span>';
+      html += '</div>';
+
+      // 进度条
+      html += '<div class="pixel-progress" style="margin:12px 0;">';
+      html += '<div class="pixel-progress__fill" id="judgeBarFill" style="width:0%;"></div>';
+      html += '</div>';
+
+      html += '<div style="text-align:center;margin-top:8px;">';
+      html += '<span class="pixel-timer" id="phase3Timer">30</span>';
+      html += '<span style="font-size:10px;color:var(--dave-white);"> 秒</span>';
+      html += '</div>';
+
+      html += '<div id="phase3Tip" style="margin-top:12px;"></div>';
+
+      content.innerHTML = html;
+
+      // 禁止手动跳过按钮
+      var actions = document.getElementById('phaseActions');
+      actions.innerHTML = '<p style="text-align:center;font-size:7px;color:rgba(255,255,255,0.4);">高频翻面中，等待提示音…</p>';
+
+      runUnevenRound();
+    }
+
+    /** 执行一轮30秒翻面 */
+    function runUnevenRound() {
+      stopTimer();
+      state.unevenRound++;
+
+      var round = state.unevenRound;
+      document.getElementById('unevenRoundText').textContent = round;
+      document.getElementById('judgeBarFill').style.width = '0%';
+      document.getElementById('phase3Timer').textContent = UNEVEN_PER_ROUND;
+      document.getElementById('phase3Tip').innerHTML = '';
+
+      state.currentTimer = createTimer(UNEVEN_PER_ROUND, function(remaining, elapsed) {
+        var timerEl = document.getElementById('phase3Timer');
+        var bar = document.getElementById('judgeBarFill');
+        if (timerEl) timerEl.textContent = remaining;
+        if (bar) bar.style.width = ((elapsed / UNEVEN_PER_ROUND) * 100) + '%';
+      }, function() {
+        stopTimer();
+        playDing();
+
+        if (round < UNEVEN_ROUNDS) {
+          // 还有下一轮
+          var nextTip = '<div class="pixel-warning">🔔 叮！第 ' + round + ' 轮完成！<br>厚侧对锅心，薄侧甩锅边<br>快翻面，继续高频翻面！</div>';
+          // 第3轮（75%进度）追加手感法
+          if (round === 3) {
+            var hRef = {rare:'拇指碰食指',medium:'拇指碰中指','medium-well':'拇指碰无名指','well-done':'拇指碰小指'}[state.doneness];
+            nextTip += '<div class="pixel-tip" style="font-size:8px;margin-top:6px;">🖐 翻面前用夹子按压一下！<br><b>' + hRef + '</b> 对照大鱼际肌<br>如果已经差不多了，可以提前出锅</div>';
+          }
+          document.getElementById('phase3Tip').innerHTML = nextTip;
+          // 自动进入下一轮
+          setTimeout(function() {
+            document.getElementById('phase3Tip').innerHTML = '';
+            runUnevenRound();
+          }, 1500);
+        } else {
+          // 全部完成
+          document.getElementById('phase3Tip').innerHTML =
+            '<div class="pixel-tip">✅ 4轮高频翻面完成！热量已温柔渗透~</div>';
+          document.getElementById('phaseActions').innerHTML =
+            '<button class="pixel-btn pixel-btn--primary pixel-btn--block" id="btnToRest">进入醒肉阶段 →</button>';
+          document.getElementById('btnToRest').addEventListener('click', function() {
+            stopTimer();
+            renderPhase4();
+          });
+        }
+      });
+    }
+
+
+    // ---- J4：阶段四 —— 神圣醒肉 ----
+    function renderPhase4() {
+      state.currentPhase = 4;
+      updatePhaseDots(4);
+      document.getElementById('phaseTitle').textContent = '⏳ 阶段四：神圣醒肉';
+
+      var content = document.getElementById('phaseContent');
+
+      var html = '';
+      html += '<div class="pixel-warning" style="margin-top:20px;font-size:12px;">';
+      html += '🛑 住手！！<br>';
+      html += '把肉放在温热盘子里不准动！<br>';
+      html += '现在切开它你就白煎了！！';
+      html += '</div>';
+
+      html += '<div style="text-align:center;margin-top:20px;">';
+      html += '<span class="pixel-timer pixel-timer--danger" id="phase4Timer">5:00</span>';
+      html += '</div>';
+
+      html += '<div style="margin-top:16px;">';
+      html += '<div class="pixel-progress">';
+      html += '<div class="pixel-progress__fill" id="restBarFill" style="width:0%;background:linear-gradient(to bottom, #EF476F, #C0392B);"></div>';
+      html += '</div>';
+      html += '</div>';
+
+      content.innerHTML = html;
+
+      var actions = document.getElementById('phaseActions');
+      actions.innerHTML = '<p style="text-align:center;font-size:7px;color:var(--dave-red);">醒肉中，无法跳过…</p>';
+
+      var totalSec = 300; // 5 分钟
+      state.currentTimer = createTimer(totalSec, function(remaining) {
+        var tEl = document.getElementById('phase4Timer');
+        var bar = document.getElementById('restBarFill');
+        if (tEl) {
+          var m = Math.floor(remaining / 60);
+          var s = remaining % 60;
+          tEl.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+        }
+        if (bar) {
+          bar.style.width = ((1 - remaining / totalSec) * 100) + '%';
+        }
+      }, function() {
+        stopTimer();
+        playFanfare();
+        showVictory();
+      });
+    }
+
+
+    // ---- J5：终极通关弹窗 ----
+    function showVictory() {
+      showModal('victoryModal');
+      document.getElementById('victoryContinueBtn').addEventListener('click', function() {
+        hideModal('victoryModal');
+        hideOverlay();
+        showFeedback();
+      }, { once: true });
+    }
+
+
+    /* ==========================================================
+       Part K：反馈 & 历史 & 诊断
+       ========================================================== */
+
+    /** 显示反馈弹窗 */
+    function showFeedback() {
+      // 重置反馈状态
+      state.feedback = { actualDoneness: 'perfect', complaints: [], stars: 3 };
+      selectGridCard('actualDonenessGrid', 'actual', 'perfect');
+      // 清空复选框
+      var cbs = document.querySelectorAll('#complaintsGroup input[type="checkbox"]');
+      for (var i = 0; i < cbs.length; i++) { cbs[i].checked = false; }
+      // 重置星级
+      updateStarDisplay(3);
+
+      showModal('feedbackModal');
+      bindFeedbackEvents();
+    }
+
+    function bindFeedbackEvents() {
+      // 实际熟度选择
+      var actCards = document.querySelectorAll('#actualDonenessGrid .pixel-grid-card');
+      for (var i = 0; i < actCards.length; i++) {
+        actCards[i].addEventListener('click', function() {
+          selectGridCard('actualDonenessGrid', 'actual', this.getAttribute('data-actual'));
+          state.feedback.actualDoneness = this.getAttribute('data-actual');
+        });
+      }
+
+      // 星级评分
+      var stars = document.querySelectorAll('#starRating .pixel-star');
+      for (var j = 0; j < stars.length; j++) {
+        stars[j].addEventListener('click', function() {
+          var val = parseInt(this.getAttribute('data-star'));
+          state.feedback.stars = val;
+          updateStarDisplay(val);
+        });
+      }
+
+      // 提交按钮
+      document.getElementById('submitFeedbackBtn').addEventListener('click', function() {
+        // 收集槽点
+        var cbs = document.querySelectorAll('#complaintsGroup input[type="checkbox"]:checked');
+        state.feedback.complaints = [];
+        for (var k = 0; k < cbs.length; k++) {
+          state.feedback.complaints.push(cbs[k].value);
+        }
+        submitFeedback();
+      });
+    }
+
+    function updateStarDisplay(val) {
+      var stars = document.querySelectorAll('#starRating .pixel-star');
+      for (var i = 0; i < stars.length; i++) {
+        if (i < val) {
+          stars[i].classList.add('active');
+        } else {
+          stars[i].classList.remove('active');
+        }
+      }
+    }
+
+    function submitFeedback() {
+      var entry = {
+        date: new Date().toISOString(),
+        steakType: state.steakType,
+        thickness: state.thickness,
+        doneness: state.doneness,
+        actual: state.feedback.actualDoneness,
+        complaints: state.feedback.complaints,
+        stars: state.feedback.stars,
+      };
+
+      var history = loadHistory();
+      history.unshift(entry);   // 最新在前
+      // 最多保留50条
+      if (history.length > 50) history = history.slice(0, 50);
+      saveHistory(history);
+
+      // 更新称号
+      var perfectCount = countPerfect(history);
+      var newTitle = getTitleByPerfectCount(perfectCount);
+      saveTitle(newTitle);
+
+      hideModal('feedbackModal');
+      renderHistory();
+      updateTitleDisplay();
+    }
+
+    /** 渲染历史列表 */
+    function renderHistory() {
+      var history = loadHistory();
+      var listEl = document.getElementById('historyList');
+      if (!listEl) return;
+
+      if (history.length === 0) {
+        listEl.innerHTML = '<li style="text-align:center;color:rgba(255,255,255,0.4);padding:20px;">暂无烹饪记录<br>完成一次烹饪后出现</li>';
+        return;
+      }
+
+      var html = '';
+      for (var i = 0; i < history.length; i++) {
+        var e = history[i];
+        var date = new Date(e.date);
+        var dateStr = (date.getMonth() + 1) + '/' + date.getDate() + ' ' +
+                      date.getHours() + ':' + String(date.getMinutes()).padStart(2, '0');
+
+        var steakName = { ribeye: '眼肉', tenderloin: '菲力', sirloin: '西冷', flatiron: '板腱', other: '其他' }[e.steakType] || e.steakType;
+        var thickName = { thin: '薄切1.5cm', standard: '标准2.0cm', thick: '厚切2.5cm', uneven: '不均' }[e.thickness] || e.thickness;
+        var doneName  = { rare: '三分', medium: '五分', 'medium-well': '七分', 'well-done': '全熟' }[e.doneness] || e.doneness;
+        var actualName = { undercooked: '太生了', perfect: '刚刚好', overcooked: '熟过了', 'uneven-done': '里外不均' }[e.actual] || e.actual;
+        var resultClass = e.actual === 'perfect' ? '' : 'bad';
+        var starsStr = '';
+        for (var s = 0; s < 5; s++) { starsStr += s < e.stars ? '★' : '☆'; }
+
+        html += '<li class="pixel-history-item">';
+        html += '<span class="history-date">' + dateStr + '</span>';
+        html += '<span class="history-steak">' + steakName + ' ' + thickName + ' ' + doneName + '</span>';
+        html += '<span class="history-result ' + resultClass + '">' + actualName + '</span>';
+        html += '<span class="history-stars">' + starsStr + '</span>';
+        html += '</li>';
+      }
+
+      listEl.innerHTML = html;
+    }
+
+    /** 更新称号 & 经验条 */
+    function updateTitleDisplay() {
+      var history = loadHistory();
+      var perfectCount = countPerfect(history);
+      var info = getNextTitleInfo(perfectCount);
+
+      document.getElementById('titleBadge').textContent = info.current;
+      document.getElementById('perfectCount').textContent = perfectCount;
+
+      if (info.next) {
+        document.getElementById('needForNext').textContent = info.need;
+        var pct = info.range > 0 ? (info.progress / info.range) * 100 : 100;
+        document.getElementById('expBarFill').style.width = pct + '%';
+      } else {
+        document.getElementById('needForNext').textContent = '0';
+        document.getElementById('expBarFill').style.width = '100%';
+      }
+    }
+
+
+    /* ==========================================================
+       Part L：诊断报告生成
+       ========================================================== */
+
+    /** 翻译值 */
+    function tSteak(v) { return {ribeye:'眼肉',tenderloin:'菲力',sirloin:'西冷',flatiron:'板腱',other:'其他'}[v]||v; }
+    function tThick(v) { return {thin:'薄切1.5cm',standard:'标准2.0cm',thick:'厚切2.5cm',uneven:'厚薄不均'}[v]||v; }
+    function tDone(v)  { return {rare:'三分熟',medium:'五分熟','medium-well':'七分熟','well-done':'全熟'}[v]||v; }
+    function tActual(v) { return {undercooked:'太生',perfect:'刚刚好',overcooked:'熟过了','uneven-done':'里外不均'}[v]||v; }
+    function tComplaint(v) {
+      return {crust:'焦壳不够脆', 'grey-band':'灰色熟层太厚', stuck:'粘锅了',
+              smoke:'油烟太大', 'uneven-cook':'熟度不均', dry:'肉太柴'}[v]||v;
+    }
+
+    function generateReport() {
+      var history = loadHistory();
+      var sample = history.slice(0, 7);   // 最近7条
+
+      if (sample.length === 0) {
+        return '还没有任何烹饪记录呢！🐟\n先去煎一块牛排再来生成诊断报告吧~';
+      }
+
+      var report = '';
+      report += '══════ 潜水员戴夫 · 实战诊断报告 ══════\n';
+      report += '📅 分析范围：最近 ' + sample.length + ' 次烹饪\n';
+      report += '━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n';
+
+      // 统计
+      var total = sample.length;
+      var perfectCount = sample.filter(function(e){return e.actual==='perfect';}).length;
+      var underCount   = sample.filter(function(e){return e.actual==='undercooked';}).length;
+      var overCount    = sample.filter(function(e){return e.actual==='overcooked';}).length;
+      var unevenCount  = sample.filter(function(e){return e.actual==='uneven-done';}).length;
+      var avgStars     = (sample.reduce(function(s,e){return s+e.stars;},0) / total).toFixed(1);
+
+      report += '📊 数据总览\n';
+      report += '  完美率：' + perfectCount + '/' + total + ' (' + Math.round(perfectCount/total*100) + '%)\n';
+      report += '  平均自评：' + avgStars + '⭐\n\n';
+
+      // 熟度偏差分析
+      report += '🔬 熟度偏差分析\n';
+      var overcookSessions = sample.filter(function(e){return e.doneness!=='well-done' && e.actual==='overcooked';});
+      var undercookSessions = sample.filter(function(e){return e.doneness!=='rare' && e.actual==='undercooked';});
+
+      if (overcookSessions.length > 0) {
+        report += '  ⚠️ 发现 ' + overcookSessions.length + ' 次 "目标非全熟却煎过了"！\n';
+        report += '  → 你家火力太狂暴了，像愤怒的鲨鱼一样猛！\n';
+        report += '  → 下次把厚肉时间砍掉 20 秒试试\n';
+      }
+      if (undercookSessions.length > 0) {
+        report += '  ⚠️ 发现 ' + undercookSessions.length + ' 次 "没煎到位就出锅"！\n';
+        report += '  → 你是不是太着急了？别怕焦壳，多给 15 秒\n';
+        report += '  → 记得用拇指按压肉面测弹性\n';
+      }
+      if (overcookSessions.length === 0 && undercookSessions.length === 0 && perfectCount > 0) {
+        report += '  🎉 火力掌控优秀！熟度偏差在可控范围内！\n';
+      }
+
+      // 槽点统计
+      var allComplaints = [];
+      sample.forEach(function(e){
+        if(e.complaints) allComplaints = allComplaints.concat(e.complaints);
+      });
+      if (allComplaints.length > 0) {
+        report += '\n🐛 高频槽点 TOP3\n';
+        var freq = {};
+        allComplaints.forEach(function(c){ freq[c] = (freq[c]||0)+1; });
+        var sorted = Object.keys(freq).sort(function(a,b){return freq[b]-freq[a];}).slice(0,3);
+        sorted.forEach(function(c, i){
+          report += '  ' + (i+1) + '. ' + tComplaint(c) + '（' + freq[c] + '次）\n';
+        });
+
+        // 针对槽点给建议
+        if (freq['crust']) {
+          report += '  💡 焦壳不够脆？下锅前把肉表面彻底拍干，火要大！\n';
+        }
+        if (freq['stuck']) {
+          report += '  💡 粘锅？锅不够热就放肉，或者翻太早了！\n';
+        }
+        if (freq['grey-band']) {
+          report += '  💡 灰色熟层太厚？频繁翻面能解决，试试30秒一翻\n';
+        }
+        if (freq['dry']) {
+          report += '  💡 肉太柴？醒肉时间不能省！5分钟是底线\n';
+        }
+      }
+
+      // 厚度分析
+      var unevenSessions = sample.filter(function(e){return e.thickness==='uneven';});
+      if (unevenSessions.length > 0) {
+        report += '\n🐠 不规则肉战绩\n';
+        var unevenPerfect = unevenSessions.filter(function(e){return e.actual==='perfect';}).length;
+        report += '  厚薄不均共 ' + unevenSessions.length + ' 次，完美 ' + unevenPerfect + ' 次\n';
+        if (unevenPerfect / unevenSessions.length < 0.5) {
+          report += '  → 不规则肉果然是Boss级难度！高频翻面+厚侧向锅心\n';
+        }
+      }
+
+      report += '\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n';
+      report += '🏅 当前称号：' + loadTitle() + '\n';
+
+      // 趣味结语
+      if (perfectCount >= total * 0.7) {
+        report += '🐙 班乔：你已经是寿司店扛把子了！\n';
+      } else if (perfectCount >= total * 0.4) {
+        report += '🐟 班乔：继续磨练，深海之王的宝座在等你！\n';
+      } else {
+        report += '🦑 班乔：别气馁，每个大神都是从煎糊第一块肉开始的~\n';
+      }
+
+      report += '══════════════════════════════';
+
+      return report;
+    }
+
+    function showReport() {
+      var report = generateReport();
+      document.getElementById('reportContent').textContent = report;
+      showModal('reportModal');
+    }
+
+    function copyReport() {
+      var report = document.getElementById('reportContent').textContent;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(report).then(function() {
+          alert('报告已复制到剪贴板！📋');
+        }).catch(function() {
+          fallbackCopy(report);
+        });
+      } else {
+        fallbackCopy(report);
+      }
+    }
+
+    function fallbackCopy(text) {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); alert('报告已复制！📋'); } catch(e) { alert('复制失败，请手动选择文字复制'); }
+      document.body.removeChild(ta);
+    }
+
+
+    /* ==========================================================
+       Part M：事件绑定 & 初始化
+       ========================================================== */
+    function bindEvents() {
+      // 厚度选择
+      var thickCards = document.querySelectorAll('#thicknessGrid .pixel-grid-card');
+      for (var i = 0; i < thickCards.length; i++) {
+        thickCards[i].addEventListener('click', function() {
+          var val = this.getAttribute('data-thickness');
+          state.thickness = val;
+          selectGridCard('thicknessGrid', 'thickness', val);
+        });
+      }
+
+      // 熟度选择
+      var doneCards = document.querySelectorAll('#donenessGrid .pixel-grid-card');
+      for (var j = 0; j < doneCards.length; j++) {
+        doneCards[j].addEventListener('click', function() {
+          var val = this.getAttribute('data-doneness');
+          state.doneness = val;
+          selectGridCard('donenessGrid', 'doneness', val);
+        });
+      }
+
+      // 牛排种类
+      document.getElementById('steakType').addEventListener('change', function() {
+        state.steakType = this.value;
+      });
+
+      // 开始烹饪按钮
+      document.getElementById('startCookingBtn').addEventListener('click', function() {
+        // 获取最新值
+        state.steakType = document.getElementById('steakType').value;
+        startCooking();
+      });
+
+      // 诊断报告按钮
+      document.getElementById('reportBtn').addEventListener('click', showReport);
+
+      // 关闭报告
+      document.getElementById('closeReportBtn').addEventListener('click', function() {
+        hideModal('reportModal');
+      });
+
+      // 复制报告
+      document.getElementById('copyReportBtn').addEventListener('click', copyReport);
+    }
+
+    function startCooking() {
+      stopTimer();
+      state.currentPhase = 0;
+      state.unevenRound = 0;
+      state.feedback = { actualDoneness: 'perfect', complaints: [], stars: 3 };
+
+      // 滚动到顶部
+      window.scrollTo(0, 0);
+      showOverlay();
+      renderPhase1();
+    }
+
+    function init() {
+      renderBanchoAvatar();
+      showDailyTip();
+      bindEvents();
+      renderHistory();
+      updateTitleDisplay();
+    }
+
+    // DOM 就绪后启动
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  })();
+  </script>
+
+</body>
+</html>
