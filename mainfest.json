@@ -1,0 +1,10 @@
+{
+  "name": "班乔辣炒牛排教练",
+  "short_name": "牛排教练",
+  "description": "潜水员戴夫风硬核牛排烹饪助手",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#38bdf8",
+  "orientation": "portrait"
+}
