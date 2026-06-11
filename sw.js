@@ -6,6 +6,7 @@ const ASSETS = [
   './index.html',
   './dave-ui-theme.css',
   './manifest.json',
+  './icon.png', 
   'https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap'
 ];
 
